@@ -4,37 +4,62 @@ module.exports = compile
 
 const babel = require('babel-core')
 const set = require('set-options')
+const babylon = require('babylon')
 
-const DEFAULT_OPTIONS = {
-  allowReturnOutsideFunction: true
+const DEFAULT_BABYLON_OPTIONS = {
+  allowImportExportEverywhere: false,
+  allowReturnOutsideFunction: false,
+  sourceType: 'module'
 }
 
-function compile (code, options, callback) {
-  options = set(options, DEFAULT_OPTIONS)
+const DEFAULT_BABEL_OPTIONS = {
+  plugins: [
+    ['transform-es2015-modules-commonjs', {
+      loose: true
+    }]
+  ]
+}
 
-  let ast = options.ast || babylon.parse(code, options)
-  let map
+
+function compile (code, options, callback) {
+  let babylonOptions = set(options, DEFAULT_BABYLON_OPTIONS)
+
+  // module-walker will always pass options.filename
+  babylonOptions.sourceFilename = babylonOptions.filename
+  delete babylonOptions.filename
+
+  let ast = options.ast || babylon.parse(code, babylonOptions)
+
+  let babelOptions = set({}, DEFAULT_BABEL_OPTIONS)
+  babelOptions.filename = options.filename
+
+  let inputSouceMap = options.map
+  delete options.map
+
+  if (inputSouceMap) {
+    babelOptions.inputSouceMap = inputSouceMap
+  }
+
+  babelOptions.ast = true
+  babelOptions.code = true
+  babelOptions.sourceMaps = true
+
+  let result
 
   try {
-    {
-      code,
-      ast,
-      map
-    } = babel.transformFromAst(ast, content, {
-      plugins: [
-        ['transform-es2015-modules-commonjs', {
-          loose: true
-        }]
-      ]
-    })
+    result = babel.transformFromAst(ast, code, babelOptions)
   } catch (e) {
     return callback(e)
   }
+
+  code = result.code
+  ast = result.ast
 
   callback(null, {
     // TODO: neuron initialization
     code,
     ast,
-    map
+    map: result.map,
+    js: true
   })
 }

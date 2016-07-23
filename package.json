@@ -28,6 +28,7 @@
   "dependencies": {
     "babel-core": "^6.11.4",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.10.3",
+    "babylon": "^6.8.4",
     "set-options": "^2.0.1"
   }
 }

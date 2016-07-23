@@ -1,8 +1,8 @@
 {
   "name": "neuron-babel-compiler",
-  "version": "1.0.0",
-  "description": "neuron-babel-compiler",
-  "main": "./lib",
+  "version": "2.0.0",
+  "description": "Babel compiler for neuron.js",
+  "main": "./src",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec ./test/*.js"
   },
@@ -24,5 +24,10 @@
   "devDependencies": {
     "chai": "~1.7.2",
     "mocha": "~1.13.0"
+  },
+  "dependencies": {
+    "babel-core": "^6.11.4",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.10.3",
+    "set-options": "^2.0.1"
   }
 }
